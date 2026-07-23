@@ -1,0 +1,33 @@
+# TaskDesk — QA Virtual Engineer plugin manifest.
+product: taskdesk
+display_name: TaskDesk (walkthrough target)
+environments:
+  staging: http://localhost:3100
+auth:
+  login_flow: "Go to http://localhost:3100/login. In the username field (placeholder 'Enter username') type ${TASKDESK_USER}. In the password field (placeholder 'Enter password') type ${TASKDESK_PASS}. Click the 'Sign in' button. Wait until the URL is no longer /login."
+  username_ref: TASKDESK_USER
+  password_ref: TASKDESK_PASS
+data:
+  guardrails:
+    allowed_hosts: ["localhost", "127.0.0.1"]
+flows:
+  - id: login
+    text: "After signing in, verify the URL is no longer /login and the heading 'All Tasks' is visible."
+    tags: [smoke, auth]
+  - id: tasks-list
+    text: "After signing in, navigate to http://localhost:3100/tasks and verify the heading 'All Tasks' is visible and the element with id 'task-list' contains the text 'Write spec'."
+    tags: [smoke]
+  - id: task-create
+    text: "After signing in, navigate to http://localhost:3100/tasks/new. Fill the 'Task title' field with 'QA smoke task' and the 'Describe the task' field with 'created by QA'. Click the 'Save task' button. Verify the text 'Task created' appears."
+    tags: [regression, feature]
+  - id: profile
+    text: "After signing in, navigate to http://localhost:3100/profile and verify the heading 'Profile' is visible and the element with id 'profile-user' contains 'demo'."
+    tags: [smoke]
+  - id: defect-detect
+    text: "After signing in, navigate to http://localhost:3100/tasks and verify a heading 'Task Dashboard' is visible and an element with id 'task-count' exists."
+    tags: [regression, negative]
+policy:
+  block_on: [failed]
+  min_pass_rate: 100
+  on_missing_baseline: fail
+test_types: [ui]
